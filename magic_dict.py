@@ -2,8 +2,8 @@ from typing import Any
 class Magic_dict(dict):
     
     def __init__(self,obj:Any=None):
-        obj = obj if isinstance(obj, dict) else {'obj' : obj}
-        super().__init__(obj)
+        self.obj = obj if isinstance(obj, dict) else {'obj' : obj}
+        super().__init__(self.obj)
     
     def __call__(self,*args, **kwargs) -> Any:
         return self.obj(*args,**kwargs) if callable(self.obj) else self.obj
