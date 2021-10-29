@@ -5,8 +5,8 @@ class Magic_dict(dict):
         obj = obj if isinstance(obj, dict) else {'obj' : obj}
         super().__init__(obj)
     
-    def __call__(self) -> Any:
-        return self.obj
+    def __call__(self,*args, **kwargs) -> Any:
+        return self.obj(*args,**kwargs) if callable(self.obj) else self.obj
     
     def __getattr__(self, key):
         if key in self:return self[key]
