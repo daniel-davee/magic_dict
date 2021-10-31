@@ -13,7 +13,6 @@ class Magic_dict(dict):
         raise AttributeError(key)
 
     def __setattr__(self, key, value):
-        if key == 'obj': raise ValueError('obj cannot be key')
         self[key] = value
 
     def __delattr__(self, key):
