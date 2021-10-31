@@ -1,12 +1,14 @@
 from typing import Any
 class Magic_dict(dict):
+   
+    _pure = False    
     
     def __init__(self,obj:Any=None):
-        self.obj = obj if isinstance(obj, dict) else {'obj' : obj}
-        super().__init__(self.obj)
+        self._obj = obj
+        if isinstance(obj,dict): super().__init__(self._obj)
     
     def __call__(self,*args, **kwargs) -> Any:
-        return self.obj(*args,**kwargs) if callable(self.obj) else self.obj
+        return self._obj(*args,**kwargs) if callable(self._obj) else self._obj
     
     def __getattr__(self, key):
         if key in self:return self[key]
