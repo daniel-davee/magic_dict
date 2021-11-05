@@ -1,13 +1,21 @@
 from typing import Any
+import logging
+
+logging.basicConfig(level=logging.DEBUG)
 class Magic_dict(dict):
    
     _pure = False
-    _obj = object()    
     
-    def __init__(self,obj:Any=object()):
-        self._obj = obj if obj else self._obj
+    def __init__(self,obj:Any=None):
+        self._obj = obj if obj else obj
         if isinstance(obj,dict): super().__init__(self._obj)
         else:super().__init__({})
+        debug_questions = f"""What is obj?
+                              {obj=}
+                              what is bool(obj)?
+                              {bool(obj)}
+                              """
+        logging.debug(debug_questions)
     
     def __call__(self,*args, **kwargs) -> Any:
         return self._obj(*args,**kwargs) if callable(self._obj) else self._obj
@@ -27,17 +35,10 @@ class Magic_dict(dict):
         Returns:
             Any: [description]
         """
-        keys = key.split('.')
-        head, tail = keys[0], '.'.join(keys[1:])
-        return self[head][tail] if tail else\
-                    super().__getitem__(head) if head in self else\
-                    self.__setitem__(head,Magic_dict())
-        
-    def __setitem__(self, key: str, value: Any) -> Any:
-        if not self._obj: super()['_obj'] = value
-        super().__setitem__(key, value)
-        return value
- 
+        if key not in self:
+            super().__setitem__(key, Magic_dict())
+        return super().__getitem__(key)
+            
     def __setattr__(self, key, value):
         self[key] = value
 

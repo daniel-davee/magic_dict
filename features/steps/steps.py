@@ -15,6 +15,22 @@ def step_impl(context):
     context.name = 'foo'
     context.create = Magic_dict
 
+@given(u'input is {value} as {type_}')
+def step_impl(context,value,type_):
+    """[input is {value} as {type_}]
+    """
+    value_ = value_as_type(value,type_)
+    context.input = value_
+    questions = f"""input is {value=} as {type_=}
+                    what is the input value as string?
+                    {value=}
+                    what is the value as {type_=}?
+                    {value_=}
+                    what is context.input?
+                    {context.input=}"""
+    assert context.input == value_, "context.input error:\n" + questions
+    assert isinstance(context.input, eval(type_)), "type error:\n" + questions
+
 @given(u'log level is set to {level}')
 def step_impl(context,level):
     """[sets the log level]
@@ -42,8 +58,16 @@ def step_impl(context, obj:Any):
     """
     foo needs to be an instance of Magic_dict
     """
-    obj = getattr(context,obj)
-    assert isinstance(obj, Magic_dict), step_impl.__doc__
+    obj_ = getattr(context,obj)
+    debug_questions = f"""then {obj=} is instance of Magic_dict
+                            {yes_or_no(f"is {obj=} in context(hasattr)",hasattr(context,obj))}
+                            What is type(context.{obj})?
+                            {type(getattr(context,obj))=}
+                            What is context.result?
+                            {context.result=}
+                            {yes_or_no(f"Is context.result == context.{obj} {obj_}?", context.result == obj_)}
+                          """
+    assert isinstance(obj_, Magic_dict), debug_questions 
 
 @when(u'foo exist')
 def step_impl(context):
@@ -77,13 +101,6 @@ def step_impl(context, key, value, type_):
     setattr(context.foo,key,value)
 
 
-@when(u'result is foo["{key}"]')
-def step_impl(context,key):
-    """[trying to get {key=} out of foo
-        {yes_or_no('Does foo exist?',context.foo)}
-        {yes_or_no(f'is {key=} in foo',key in context.foo)}]
-    """
-    context.result = context.foo[key]
 
 
 @given(u'foo["{key}"] = {value} as {type_}')
@@ -134,3 +151,27 @@ def step_impl(context,attr):
 @when(u'result is foo.{key}')
 def step_impl(context,key):
     context.result = getattr(context.foo,key)
+
+@when(u'result is foo["{key}"]')
+def step_impl(context,key):
+    context.result = context.foo[key]
+    debug_message = f"""trying to get {key=} out of foo
+    ********************************************************
+        {yes_or_no('Does foo exist?',context.foo)}
+        {yes_or_no(f'is {key=} in foo',key in context.foo)}
+        What is {context.foo[key]=}
+        What is {context.result=}?
+        {yes_or_no(f'is context.result == context.foo[{key}]',context.result == context.foo[key])}"""
+    assert context.result == context.foo[key], debug_message
+    logging.debug(debug_message)
+    
+@when(u'result is foo()')
+def step_impl(context):
+    context.result = context.foo()
+    questions = f"""{yes_or_no("foo in context?", hasattr(context,'foo'))}
+                    What is foo._obj?
+                    {context.foo._obj=}
+                    What is foo()?
+                    {context.foo()=}
+                    {yes_or_no('is contex.result the same as context.foo()',context.result == context.foo())}"""
+    assert context.result == context.foo()

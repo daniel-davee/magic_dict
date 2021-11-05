@@ -39,6 +39,13 @@ Feature: the implementation of magic_dict
     And foo does not have attr bar
      When result is foo.bar
      Then result is isinstance of Magic_dict
+  
+  Scenario:foo 
+    Given input is 42 as int
+    And foo is created
+     When result is foo()
+     Then result is 42 as int
+
 
 
 
