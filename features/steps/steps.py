@@ -118,6 +118,19 @@ def step_impl(context,key:str):
             {yes_or_no('is key in foo?',key in context.foo)}"""
     assert key not in context.foo, msg
 
+@given(u'foo does not have attr {attr}')
+def step_impl(context,attr):
+    """[foo does not have attr {attr}]
+    """
+    msg = f"""
+            What is attr?
+            {attr=}
+            whats dir context?
+            {dir(context)=}
+            {yes_or_no('does contex have foo', hasattr(context,'foo'))}
+            {yes_or_no('does foo has attr?',hasattr(context.foo, attr))}"""
+    assert hasattr(context.foo,attr), msg
+
 @when(u'result is foo.{key}')
 def step_impl(context,key):
     context.result = getattr(context.foo,key)

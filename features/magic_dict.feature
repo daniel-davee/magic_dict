@@ -34,6 +34,11 @@ Feature: the implementation of magic_dict
      When result is foo["bar"]
      Then result is isinstance of Magic_dict
 
+  Scenario: foo does not have attr bar, foo.bar returns Magic_dict() 
+    Given foo is created
+    And foo does not have attr bar
+     When result is foo.bar
+     Then result is isinstance of Magic_dict
 
 
 
