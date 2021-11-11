@@ -1,8 +1,11 @@
 from behave import *
 from magic_dict import Magic_dict
 from typing import Any
-import logging
+from pysimplelog import Logger
 import sys
+
+logger = Logger(__name__)
+logger.set_log_file_basename('run_cmd')
 
 def yes_or_no(question:str, answer:bool):
     return question + '\n' + ('yes' if answer else 'no')
@@ -39,12 +42,9 @@ def step_impl(context,level):
         context ([type]): [description]
         level ([type]): [description]
     """
-    log_level = logging.DEBUG if level.lower() == 'debug' else \
-                logging.INFO
-    handlers=[logging.FileHandler("debug.log"),logging.StreamHandler(sys.stdout)]
-    logging.basicConfig(handlers=handlers)
-    logging.getLogger().setLevel(log_level)
-    logging.debug(f'what is log level:{logging.getLevelName(logging.root.getEffectiveLevel())}')
+    
+    logger.set_minimum_level(logger.logLevels[level])
+    logger.debug(f'what is log level:{logger.getLevelName(logger.root.getEffectiveLevel())}')
 
 @given(u'foo is created')
 def step_impl(context):
@@ -120,7 +120,7 @@ def step_impl(context, key, value, type_):
                     what context.foo.key?\n{getattr(context.foo,key)=}
                     what context.foo.key?\n{ context.foo.bar =}
                     what is type of value?\n{type(value)=}"""
-    logging.debug(questions)
+    logger.debug(questions)
 
 @given(u'{key} not in foo')
 def step_impl(context,key:str):
@@ -163,7 +163,7 @@ def step_impl(context,key):
         What is {context.result=}?
         {yes_or_no(f'is context.result == context.foo[{key}]',context.result == context.foo[key])}"""
     assert context.result == context.foo[key], debug_message
-    logging.debug(debug_message)
+    logger.debug(debug_message)
     
 @when(u'result is foo()')
 def step_impl(context):

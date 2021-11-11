@@ -1,7 +1,9 @@
 from typing import Any
-import logging
+from pysimplelog import Logger
 
-logging.basicConfig(level=logging.DEBUG)
+logger = Logger(__name__)
+logger.set_log_file_basename(__name__)
+logger.set_minimum_level(logger.logLevels['info'])
 class Magic_dict(dict):
    
     _pure = False
@@ -15,7 +17,7 @@ class Magic_dict(dict):
                               what is bool(obj)?
                               {bool(obj)}
                               """
-        logging.debug(debug_questions)
+        logger.debug(debug_questions)
     
     def __call__(self,*args, **kwargs) -> Any:
         return self._obj(*args,**kwargs) if callable(self._obj) else self._obj
