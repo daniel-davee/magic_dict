@@ -2,7 +2,6 @@ from behave import *
 from magic_dict import Magic_dict
 from typing import Any
 from pysimplelog import Logger
-import sys
 
 logger = Logger(__name__)
 logger.set_log_file_basename('run_cmd')
@@ -44,7 +43,15 @@ def step_impl(context,level):
     """
     
     logger.set_minimum_level(logger.logLevels[level])
-    logger.debug(f'what is log level:{logger.getLevelName(logger.root.getEffectiveLevel())}')
+    degbug_msg = f"""
+                     What is {level=}?
+                     What is {logger.stdoutMinLevel=}?
+                     {yes_or_no(f'Is {logger.logLevels[level]=} equall to {logger.stdoutMinLevel}?',
+                     logger.logLevels[level] == logger.stdoutMinLevel)}
+                     """
+    logger.debug(degbug_msg)
+    
+    assert logger.logLevels[level] == logger.stdoutMinLevel
 
 @given(u'foo is created')
 def step_impl(context):
